@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAMPUS PULSE // Student Events Hub</title>
+  <meta name="description" content="Discover, explore, and attend college events happening inside the campus. Black and white editorial theme.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="site-header" role="banner">
+    <div class="header-inner container">
+      <div class="brand-group">
+        <div class="brand-logo" aria-hidden="true">
+          <span class="logo-box">CP</span>
+        </div>
+        <div class="brand-text">
+          <span class="college-sub">CAMPUS PULSE // STUDENT UNION</span>
+          <h1 class="brand-title">COLLEGE EVENTS</h1>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Live Ticker Indicator -->
+        <div class="live-indicator" title="Current Campus Status">
+          <span class="pulse-dot"></span>
+          <span class="live-label">CAMPUS ACTIVE</span>
+          <span class="live-time" id="liveClock">--:--:--</span>
+        </div>
+
+        <!-- Saved Bookmarks Quick Toggle -->
+        <button id="savedFilterBtn" class="btn btn-outline btn-sm" aria-label="View saved events">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Saved</span>
+          <span class="badge-count" id="savedCountBadge">0</span>
+        </button>
+
+        <!-- Propose Event Button -->
+        <button id="openSubmitModalBtn" class="btn btn-primary btn-sm" aria-label="Propose or add an event">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>Submit Event</span>
+        </button>
+
+        <!-- B&W Theme Switcher (Dark Monochrome / Light Monochrome) -->
+        <button id="themeToggleBtn" class="btn btn-icon" aria-label="Toggle theme mode" title="Toggle Light / Dark Monochrome">
+          <svg class="icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Marquee Ticker -->
+  <aside class="news-ticker-bar" aria-label="Campus announcements">
+    <div class="ticker-content">
+      <span class="ticker-badge">TODAY'S HIGHLIGHTS</span>
+      <div class="ticker-track">
+        <span class="ticker-item">• ANNUAL TECH CRUCIBLE HACKATHON: CHECK-IN STARTS AT 09:00 IN TURING HALL</span>
+        <span class="ticker-item">• JAZZ & ACOUSTIC NIGHT AT THE AMPHITHEATRE @ 6:00 PM</span>
+        <span class="ticker-item">• INTER-COLLEGE BASKETBALL FINALS THIS FRIDAY</span>
+        <span class="ticker-item">• GUEST LECTURE: NEURAL NETWORKS & QUANTUM SYSTEMS IN AUDITORIUM B</span>
+        <span class="ticker-item">• FREE ENTRY WITH STUDENT ID CARD ACROSS ALL VENUES</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content container" id="mainContent">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-header">
+        <div class="hero-tag">[ CAMPUS DIRECTORY // SEMESTER ACTIVE ]</div>
+        <h2 class="hero-heading">WHAT'S HAPPENING ON CAMPUS</h2>
+        <p class="hero-subtext">
+          Explore upcoming workshops, fests, hackathons, guest lectures, sports tournaments, and club meets. Click any event to inspect full details, speaker lineups, venues, and secure your entry pass.
+        </p>
+      </div>
+
+      <!-- Quick Metrics Ribbon -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-num" id="statTotalEvents">0</span>
+          <span class="metric-title">TOTAL EVENTS</span>
+          <span class="metric-desc">Scheduled this term</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-num" id="statTodayEvents">0</span>
+          <span class="metric-title">HAPPENING TODAY</span>
+          <span class="metric-desc">Live on campus right now</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-num" id="statActiveClubs">0</span>
+          <span class="metric-title">STUDENT CLUBS</span>
+          <span class="metric-desc">Organizing activities</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-num" id="statFreeEntry">0</span>
+          <span class="metric-title">FREE ACCESS</span>
+          <span class="metric-desc">Valid with Student ID</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls Bar: Search, Category Filters, Sort, View Toggle -->
+    <section class="controls-section" aria-label="Event search and filters">
+      <!-- Search & Primary Filter Row -->
+      <div class="search-filter-row">
+        <!-- Search Input with Keyboard Shortcut hint -->
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="search" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="Search events, clubs, speakers, halls, tags... (Press / to focus)"
+            aria-label="Search events"
+          >
+          <kbd class="kbd-shortcut">/</kbd>
+          <button id="clearSearchBtn" class="clear-btn" aria-label="Clear search" hidden>✕</button>
+        </div>
+
+        <!-- Secondary Controls: Date, Sort, and View -->
+        <div class="secondary-controls">
+          <!-- Date Filter Select -->
+          <div class="control-group">
+            <label for="dateFilterSelect" class="control-label">TIMEFRAME</label>
+            <select id="dateFilterSelect" class="form-select">
+              <option value="all">All Dates</option>
+              <option value="today">Happening Today</option>
+              <option value="tomorrow">Tomorrow</option>
+              <option value="this-week">This Week</option>
+              <option value="weekend">This Weekend</option>
+            </select>
+          </div>
+
+          <!-- Sort Select -->
+          <div class="control-group">
+            <label for="sortSelect" class="control-label">SORT BY</label>
+            <select id="sortSelect" class="form-select">
+              <option value="date-asc">Date: Earliest First</option>
+              <option value="date-desc">Date: Latest First</option>
+              <option value="popular">Most Popular</option>
+              <option value="title-asc">Title: A to Z</option>
+            </select>
+          </div>
+
+          <!-- View Mode Switch (Grid / List) -->
+          <div class="view-switch-group" role="radiogroup" aria-label="Display View">
+            <button class="view-btn active" data-view="grid" aria-label="Grid view" title="Grid View">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </button>
+            <button class="view-btn" data-view="list" aria-label="List view" title="List View">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills (Horizontal Scrollable) -->
+      <nav class="category-tabs" aria-label="Filter by category">
+        <button class="cat-pill active" data-category="all">
+          <span>ALL EVENTS</span>
+          <span class="pill-count" id="countCatAll">0</span>
+        </button>
+        <button class="cat-pill" data-category="Technology">
+          <span>TECH & CODE</span>
+          <span class="pill-count" id="countCatTech">0</span>
+        </button>
+        <button class="cat-pill" data-category="Culture">
+          <span>ARTS & CULTURE</span>
+          <span class="pill-count" id="countCatCulture">0</span>
+        </button>
+        <button class="cat-pill" data-category="Workshop">
+          <span>WORKSHOPS</span>
+          <span class="pill-count" id="countCatWorkshop">0</span>
+        </button>
+        <button class="cat-pill" data-category="Sports">
+          <span>SPORTS & FITNESS</span>
+          <span class="pill-count" id="countCatSports">0</span>
+        </button>
+        <button class="cat-pill" data-category="Academics">
+          <span>GUEST LECTURES</span>
+          <span class="pill-count" id="countCatAcademics">0</span>
+        </button>
+        <button class="cat-pill" data-category="Social">
+          <span>FEST & SOCIAL</span>
+          <span class="pill-count" id="countCatSocial">0</span>
+        </button>
+      </nav>
+
+      <!-- Active Filter Chips / Clear All -->
+      <div class="active-filters-bar" id="activeFiltersBar" hidden>
+        <span class="filters-summary-text" id="filtersSummaryText">Showing filtered events</span>
+        <div class="chips-container" id="filterChipsContainer"></div>
+        <button id="resetAllFiltersBtn" class="btn-link">Reset all filters</button>
+      </div>
+    </section>
+
+    <!-- Results Status Bar -->
+    <div class="results-meta-bar">
+      <div class="results-count-text">
+        <span id="resultsCount">0</span> events matching criteria
+      </div>
+      <div class="results-actions">
+        <button id="showTodayOnlyBtn" class="pill-badge-action">
+          <span class="badge-dot"></span> Show Only Today's Events
+        </button>
+      </div>
+    </div>
+
+    <!-- Events Container (Grid / List) -->
+    <section class="events-feed-section" aria-live="polite">
+      <!-- Cards rendered here dynamically -->
+      <div class="events-grid view-grid" id="eventsContainer">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" hidden>
+        <div class="empty-icon-wrap">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+        </div>
+        <h3 class="empty-title">NO MATCHING EVENTS FOUND</h3>
+        <p class="empty-desc">
+          We couldn't find any college events matching your search or filter combination. Try adjusting keywords or clearing active filters.
+        </p>
+        <button id="emptyResetBtn" class="btn btn-primary btn-sm">Clear All Filters</button>
+      </div>
+    </section>
+
+    <!-- Campus Map & Venues Quick Reference Banner -->
+    <section class="campus-venues-section">
+      <div class="section-badge">[ CAMPUS VENUES DIRECTORY ]</div>
+      <h3 class="section-heading">WHERE IT'S HAPPENING</h3>
+      <div class="venues-grid">
+        <div class="venue-card">
+          <div class="venue-code">AUD-A</div>
+          <div class="venue-info">
+            <h4>Grand Dr. Kalam Auditorium</h4>
+            <p>Main Academic Block • Capacity: 1,200 • Audio-Visual & Central Air</p>
+          </div>
+        </div>
+        <div class="venue-card">
+          <div class="venue-code">LAB-7</div>
+          <div class="venue-info">
+            <h4>Alan Turing Computing Complex</h4>
+            <p>Science Tower 3F • Gigabit LAN, Linux Rigs & Dual Screens</p>
+          </div>
+        </div>
+        <div class="venue-card">
+          <div class="venue-code">HUB-0</div>
+          <div class="venue-info">
+            <h4>Student Union & Open Amphitheatre</h4>
+            <p>Central Lawn Quadrangle • Acoustically treated for concerts & open fests</p>
+          </div>
+        </div>
+        <div class="venue-card">
+          <div class="venue-code">ARENA</div>
+          <div class="venue-info">
+            <h4>Vikram Sarabhai Sports Arena</h4>
+            <p>North Campus • Indoor wooden courts, running track & gymnasium</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <div class="footer-brand">CAMPUS PULSE // 2026</div>
+        <p class="footer-tagline">
+          The centralized events directory and student discovery platform for collegiate activities, symposiums, and cultural fests.
+        </p>
+      </div>
+      <div class="footer-meta">
+        <div class="footer-nav">
+          <a href="#mainContent">Back to top ↑</a>
+          <span class="sep">•</span>
+          <button id="footerSubmitBtn" class="btn-link">Submit Club Event</button>
+          <span class="sep">•</span>
+          <span class="badge-mono">MONOCHROME EDITION</span>
+        </div>
+        <p class="footer-copy">Designed with high-contrast accessibility & performance in mind.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: EVENT DETAILS DIALOG (NATIVE <dialog> WITH BACKDROP)    -->
+  <!-- ============================================================== -->
+  <dialog class="modal-dialog" id="eventDetailsModal" aria-labelledby="modalEventTitle" aria-modal="true">
+    <div class="modal-window">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-meta">
+          <span class="badge-mono" id="modalCategory">[ CATEGORY ]</span>
+          <span class="status-chip" id="modalStatusChip">UPCOMING</span>
+          <span class="modal-id" id="modalEventCode">#EV-000</span>
+        </div>
+        <button class="modal-close-btn" id="closeDetailsModalBtn" aria-label="Close modal">✕</button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="modal-body" id="modalBody">
+        <!-- Event Main Title & Club -->
+        <div class="modal-title-group">
+          <h2 class="modal-title" id="modalEventTitle">Event Title Placeholder</h2>
+          <div class="modal-organizer" id="modalClub">Organized by Club Name</div>
+        </div>
+
+        <!-- Key Meta Grid -->
+        <div class="detail-matrix-grid">
+          <div class="matrix-cell">
+            <span class="matrix-label">DATE & DAY</span>
+            <span class="matrix-val" id="modalDate">Saturday, Nov 08, 2026</span>
+          </div>
+          <div class="matrix-cell">
+            <span class="matrix-label">TIME</span>
+            <span class="matrix-val" id="modalTime">10:00 AM – 04:30 PM</span>
+          </div>
+          <div class="matrix-cell">
+            <span class="matrix-label">VENUE & ROOM</span>
+            <span class="matrix-val" id="modalVenue">Main Auditorium, Room 101</span>
+          </div>
+          <div class="matrix-cell">
+            <span class="matrix-label">ADMISSION / FEE</span>
+            <span class="matrix-val" id="modalFee">FREE (With College ID)</span>
+          </div>
+        </div>
+
+        <!-- Banner Visual / Geometric Graphic -->
+        <div class="modal-visual-banner" id="modalVisualBanner">
+          <div class="banner-grid-overlay"></div>
+          <div class="banner-headline">
+            <span class="banner-cat" id="modalBannerCat">CAMPUS PULSE</span>
+            <span class="banner-big" id="modalBannerTitle">TECH CRUCIBLE</span>
+          </div>
+          <div class="banner-footer-mono" id="modalBannerMono">OFFICIAL STUDENT EVENT // 2026</div>
+        </div>
+
+        <!-- About / Description -->
+        <div class="detail-section">
+          <h3 class="detail-section-title">ABOUT THIS EVENT</h3>
+          <p class="detail-body-text" id="modalDescription">
+            Event description goes here.
+          </p>
+        </div>
+
+        <!-- Agenda / Timeline -->
+        <div class="detail-section" id="modalAgendaSection">
+          <h3 class="detail-section-title">SCHEDULE & TIMELINE</h3>
+          <div class="timeline-container" id="modalTimeline">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Speakers / Special Guests -->
+        <div class="detail-section" id="modalSpeakersSection">
+          <h3 class="detail-section-title">KEYNOTE SPEAKERS & MENTORS</h3>
+          <div class="speakers-grid" id="modalSpeakers">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Venue Directions / Practical Information -->
+        <div class="detail-section">
+          <h3 class="detail-section-title">CAMPUS ENTRY & INSTRUCTIONS</h3>
+          <ul class="guidelines-list" id="modalGuidelines">
+            <li>Valid College Identity Card is mandatory at the security gates.</li>
+            <li>Attendees should arrive at least 15 minutes before scheduled start time.</li>
+            <li>Certificates of participation will be issued to registered attendees.</li>
+            <li>Laptops are recommended for hands-on technical workshop tracks.</li>
+          </ul>
+        </div>
+
+        <!-- Capacity Meter -->
+        <div class="detail-section">
+          <div class="capacity-bar-header">
+            <span class="matrix-label">REGISTRATION CAPACITY</span>
+            <span class="capacity-ratio" id="modalCapacityRatio">140 / 200 Registered</span>
+          </div>
+          <div class="capacity-progress-track">
+            <div class="capacity-progress-fill" id="modalCapacityFill" style="width: 70%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer (Sticky Action Bar) -->
+      <div class="modal-footer">
+        <div class="modal-footer-left">
+          <button id="modalBookmarkBtn" class="btn btn-outline" aria-label="Bookmark event">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span id="modalBookmarkText">Save to My Schedule</span>
+          </button>
+          <button id="modalShareBtn" class="btn btn-outline" aria-label="Copy event link">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+              <polyline points="16 6 12 2 8 6"></polyline>
+              <line x1="12" y1="2" x2="12" y2="15"></line>
+            </svg>
+            <span>Share</span>
+          </button>
+          <button id="modalCalendarBtn" class="btn btn-outline" aria-label="Add to calendar">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>Add to Calendar</span>
+          </button>
+        </div>
+
+        <div class="modal-footer-right">
+          <button id="modalRegisterBtn" class="btn btn-primary btn-lg">
+            <span>GET ENTRY PASS / RSVP</span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: REGISTRATION & DIGITAL ENTRY PASS TICKET DIALOG         -->
+  <!-- ============================================================== -->
+  <dialog class="modal-dialog" id="registerModal" aria-labelledby="registerModalTitle" aria-modal="true">
+    <div class="modal-window modal-window-sm">
+      <div class="modal-header">
+        <div>
+          <span class="badge-mono">[ ADMISSION TICKET ]</span>
+          <h3 class="modal-title-sm" id="registerModalTitle">RESERVE EVENT PASS</h3>
+        </div>
+        <button class="modal-close-btn" id="closeRegisterModalBtn" aria-label="Close registration modal">✕</button>
+      </div>
+
+      <!-- Registration Form (View 1) -->
+      <form id="rsvpForm" class="modal-body-form">
+        <p class="form-instructions">
+          Please confirm your student details to reserve your seat. Instant confirmation pass will be generated.
+        </p>
+
+        <div class="form-field">
+          <label for="rsvpStudentName" class="form-label">FULL NAME *</label>
+          <input type="text" id="rsvpStudentName" class="form-input" placeholder="e.g. Alex Morgan" required>
+        </div>
+
+        <div class="form-field">
+          <label for="rsvpStudentId" class="form-label">COLLEGE ROLL / STUDENT ID *</label>
+          <input type="text" id="rsvpStudentId" class="form-input" placeholder="e.g. CS-2024-0482" required>
+        </div>
+
+        <div class="form-field">
+          <label for="rsvpEmail" class="form-label">INSTITUTION EMAIL *</label>
+          <input type="email" id="rsvpEmail" class="form-input" placeholder="e.g. alex.m@college.edu" required>
+        </div>
+
+        <div class="form-field">
+          <label for="rsvpDepartment" class="form-label">DEPARTMENT / MAJOR</label>
+          <select id="rsvpDepartment" class="form-select">
+            <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+            <option value="Electronics & Electrical">Electronics & Electrical</option>
+            <option value="Mechanical & Mechatronics">Mechanical & Mechatronics</option>
+            <option value="Business & Management">Business & Management</option>
+            <option value="Fine Arts & Humanities">Fine Arts & Humanities</option>
+            <option value="Sciences & Mathematics">Sciences & Mathematics</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" id="cancelRsvpBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="confirmRsvpBtn">Generate Pass →</button>
+        </div>
+      </form>
+
+      <!-- Digital Pass Ticket Result (View 2) -->
+      <div id="ticketResultView" class="ticket-view" hidden>
+        <div class="digital-ticket">
+          <div class="ticket-top">
+            <div class="ticket-header-line">
+              <span class="ticket-badge">COLLEGE ENTRY PASS</span>
+              <span class="ticket-code" id="ticketCode">#PASS-88219</span>
+            </div>
+            <h4 class="ticket-event-title" id="ticketEventTitle">Annual Tech Hackathon</h4>
+            <div class="ticket-event-venue" id="ticketVenue">Turing Engineering Hall</div>
+          </div>
+
+          <div class="ticket-divider">
+            <div class="notch notch-left"></div>
+            <div class="divider-dash"></div>
+            <div class="notch notch-right"></div>
+          </div>
+
+          <div class="ticket-body">
+            <div class="ticket-row">
+              <div class="ticket-col">
+                <span class="t-label">STUDENT</span>
+                <span class="t-val" id="ticketStudentName">Alex Morgan</span>
+              </div>
+              <div class="ticket-col">
+                <span class="t-label">STUDENT ID</span>
+                <span class="t-val" id="ticketStudentId">CS-2024-0482</span>
+              </div>
+            </div>
+            <div class="ticket-row">
+              <div class="ticket-col">
+                <span class="t-label">DATE</span>
+                <span class="t-val" id="ticketDate">NOV 08, 2026</span>
+              </div>
+              <div class="ticket-col">
+                <span class="t-label">SEAT ALLOCATION</span>
+                <span class="t-val" id="ticketSeat">ZONE A // ROW 4</span>
+              </div>
+            </div>
+
+            <!-- Stylized Monochrome QR Code / Barcode -->
+            <div class="ticket-qr-section">
+              <div class="qr-box" id="ticketQrGraphic" aria-label="QR Pass Code">
+                <!-- SVG QR Pattern -->
+                <svg viewBox="0 0 100 100" class="qr-svg">
+                  <rect width="100" height="100" fill="#000" />
+                  <!-- QR Corner squares -->
+                  <rect x="5" y="5" width="26" height="26" fill="#fff" />
+                  <rect x="9" y="9" width="18" height="18" fill="#000" />
+                  <rect x="13" y="13" width="10" height="10" fill="#fff" />
+
+                  <rect x="69" y="5" width="26" height="26" fill="#fff" />
+                  <rect x="73" y="9" width="18" height="18" fill="#000" />
+                  <rect x="77" y="13" width="10" height="10" fill="#fff" />
+
+                  <rect x="5" y="69" width="26" height="26" fill="#fff" />
+                  <rect x="9" y="73" width="18" height="18" fill="#000" />
+                  <rect x="13" y="77" width="10" height="10" fill="#fff" />
+
+                  <!-- Stylized data bits -->
+                  <rect x="36" y="8" width="6" height="6" fill="#fff"/>
+                  <rect x="46" y="14" width="6" height="6" fill="#fff"/>
+                  <rect x="56" y="8" width="6" height="6" fill="#fff"/>
+                  <rect x="36" y="24" width="6" height="6" fill="#fff"/>
+                  <rect x="46" y="20" width="6" height="6" fill="#fff"/>
+                  
+                  <rect x="10" y="38" width="8" height="8" fill="#fff"/>
+                  <rect x="24" y="44" width="8" height="8" fill="#fff"/>
+                  <rect x="38" y="36" width="12" height="6" fill="#fff"/>
+                  <rect x="56" y="40" width="6" height="12" fill="#fff"/>
+                  <rect x="68" y="36" width="8" height="8" fill="#fff"/>
+                  <rect x="82" y="44" width="10" height="6" fill="#fff"/>
+
+                  <rect x="36" y="58" width="6" height="6" fill="#fff"/>
+                  <rect x="48" y="54" width="8" height="12" fill="#fff"/>
+                  <rect x="64" y="62" width="10" height="6" fill="#fff"/>
+                  <rect x="80" y="58" width="12" height="10" fill="#fff"/>
+
+                  <rect x="36" y="76" width="10" height="8" fill="#fff"/>
+                  <rect x="52" y="72" width="6" height="16" fill="#fff"/>
+                  <rect x="64" y="80" width="14" height="10" fill="#fff"/>
+                  <rect x="84" y="76" width="8" height="14" fill="#fff"/>
+                </svg>
+              </div>
+              <div class="qr-instructions">
+                <span class="qr-title">SCAN AT VENUE GATE</span>
+                <span class="qr-sub">Scan digital pass or show ID for quick entry badge.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ticket-actions">
+          <button id="printPassBtn" class="btn btn-outline btn-block">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            <span>Print / Save Pass</span>
+          </button>
+          <button id="closeTicketViewBtn" class="btn btn-primary btn-block">Done</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: PROPOSE / SUBMIT AN EVENT DIALOG                        -->
+  <!-- ============================================================== -->
+  <dialog class="modal-dialog" id="submitModal" aria-labelledby="submitModalTitle" aria-modal="true">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div>
+          <span class="badge-mono">[ STUDENT SUBMISSION ]</span>
+          <h3 class="modal-title" id="submitModalTitle">SUBMIT A CAMPUS EVENT</h3>
+        </div>
+        <button class="modal-close-btn" id="closeSubmitModalBtn" aria-label="Close submission modal">✕</button>
+      </div>
+
+      <form id="proposeEventForm" class="modal-body-form">
+        <p class="form-instructions">
+          Are you organizing a workshop, cultural show, or sports tournament? List your event on Campus Pulse for student visibility.
+        </p>
+
+        <div class="form-row-2">
+          <div class="form-field">
+            <label for="newEventTitle" class="form-label">EVENT TITLE *</label>
+            <input type="text" id="newEventTitle" class="form-input" placeholder="e.g. AI Prompt Engineering Jam" required>
+          </div>
+          <div class="form-field">
+            <label for="newEventCategory" class="form-label">CATEGORY *</label>
+            <select id="newEventCategory" class="form-select" required>
+              <option value="Technology">Technology & Code</option>
+              <option value="Culture">Arts & Culture</option>
+              <option value="Workshop">Hands-on Workshop</option>
+              <option value="Sports">Sports & Athletics</option>
+              <option value="Academics">Guest Lecture / Symposium</option>
+              <option value="Social">Social & Fest</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-field">
+            <label for="newEventClub" class="form-label">ORGANIZING CLUB / DEPT *</label>
+            <input type="text" id="newEventClub" class="form-input" placeholder="e.g. IEEE Student Branch" required>
+          </div>
+          <div class="form-field">
+            <label for="newEventVenue" class="form-label">CAMPUS VENUE / ROOM *</label>
+            <input type="text" id="newEventVenue" class="form-input" placeholder="e.g. Ramanujan Hall, Level 2" required>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-field">
+            <label for="newEventDate" class="form-label">DATE *</label>
+            <input type="date" id="newEventDate" class="form-input" required>
+          </div>
+          <div class="form-field">
+            <label for="newEventTime" class="form-label">TIME (START – END) *</label>
+            <input type="text" id="newEventTime" class="form-input" placeholder="e.g. 02:00 PM – 05:00 PM" required>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="newEventDesc" class="form-label">DESCRIPTION & SUMMARY *</label>
+          <textarea id="newEventDesc" class="form-textarea" rows="3" placeholder="Explain what the event is about, what participants will learn, and who should attend..." required></textarea>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-field">
+            <label for="newEventSpeaker" class="form-label">KEYNOTE SPEAKER / HOST (OPTIONAL)</label>
+            <input type="text" id="newEventSpeaker" class="form-input" placeholder="e.g. Dr. Jane Smith, Research Lead">
+          </div>
+          <div class="form-field">
+            <label for="newEventCapacity" class="form-label">SEATING CAPACITY *</label>
+            <input type="number" id="newEventCapacity" class="form-input" min="10" max="2000" value="100" required>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" id="cancelSubmitBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveNewEventBtn">Publish to Directory →</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Toast Notification Hub -->
+  <div class="toast-hub" id="toastHub" aria-live="assertive" aria-atomic="true"></div>
+
+  <!-- App Script -->
+  <script src="app.js"></script>
+</body>
+</html>
